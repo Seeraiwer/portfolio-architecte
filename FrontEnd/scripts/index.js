@@ -1,7 +1,7 @@
 // Définition de l'URL de base de l'API
 const api = "http://localhost:5678/api/";
 
-// Récupération du token utilisateur depuis le localStorage (utile pour l'authentification)
+// Récupération du token utilisateur depuis le localStorage
 const token = localStorage.getItem("token");
 
 // Variables globales
