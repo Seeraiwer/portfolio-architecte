@@ -15,7 +15,9 @@ const filterButtons = document.createElement("div"); // Conteneur des boutons de
 const portfolioSection = document.querySelector("#portfolio"); // Section du portfolio
 
 // Insère le conteneur des boutons juste après le titre "Mes Projets"
-portfolioSection.querySelector("h2").insertAdjacentElement("afterend", filterButtons);
+portfolioSection
+  .querySelector("h2")
+  .insertAdjacentElement("afterend", filterButtons);
 
 const imageUrls = []; // Stocke les URLs des images des projets
 
@@ -69,7 +71,6 @@ function getButtonTitles(cards) {
   return [...new Set(cards.map((card) => card.category.name))]; // Retourne une liste unique des catégories
 }
 
-
 // =============================================
 // CRÉATION & INJECTION DES BOUTONS DE FILTRAGE
 // =============================================
@@ -89,7 +90,8 @@ function filtersBtn(btnTitle) {
   // Création des boutons dynamiques pour chaque catégorie reçue en paramètre
   const buttons = [
     allButton, // Le bouton "Tous" est inclus en premier dans la liste des boutons
-    ...btnTitle.map((categoryName) => { // Parcourt le tableau `btnTitle` contenant les noms des catégories
+    ...btnTitle.map((categoryName) => {
+      // Parcourt le tableau `btnTitle` contenant les noms des catégories
       const button = document.createElement("button"); // Crée un bouton pour chaque catégorie
       button.classList.add("btn"); // Ajoute la classe "btn" pour le style
       button.textContent = categoryName; // Définit le texte du bouton comme le nom de la catégorie
@@ -114,7 +116,6 @@ function filtersBtn(btnTitle) {
     });
   });
 }
-
 
 // =============================================
 // GÉNÉRATION DES CARTES DE PROJETS
@@ -153,7 +154,7 @@ function cardsTemplate(card) {
 function displayCards(cardsArray) {
   const fragment = document.createDocumentFragment(); // Crée un fragment DOM pour optimiser l'ajout
 
-  cardsArray.forEach(card => {
+  cardsArray.forEach((card) => {
     const cardElement = cardsTemplate(card); // Génère une carte
     fragment.appendChild(cardElement); // Ajoute la carte au fragment
   });
@@ -174,7 +175,7 @@ function workDisplay() {
   cards.forEach((card) => {
     if (categoryIdValue === "Tous" || card.category.name === categoryIdValue) {
       cardDisplay.add(card); // Ajoute le projet au Set si la catégorie correspond
-      }
+    }
   });
 
   // 🖼️ Ajout des projets filtrés à la galerie
@@ -182,8 +183,6 @@ function workDisplay() {
     gallery.appendChild(cardsTemplate(card)); // Génère la carte et l'ajoute à la galerie
   });
 }
-
-
 
 // =============================================
 // CHARGEMENT DES DONNÉES AU DÉMARRAGE
@@ -195,4 +194,3 @@ window.addEventListener("load", () => {
   categoryIdValue = "Tous"; // 🏷️ Définit la catégorie par défaut sur "Tous"
   checkToken(); // 🔒 Vérifie si l'utilisateur est connecté pour gérer l'affichage
 });
-
