@@ -174,7 +174,7 @@ function workDisplay() {
   cards.forEach((card) => {
     if (categoryIdValue === "Tous" || card.category.name === categoryIdValue) {
       cardDisplay.add(card); // Ajoute le projet au Set si la catégorie correspond
-    }
+      }
   });
 
   // 🖼️ Ajout des projets filtrés à la galerie
@@ -182,6 +182,7 @@ function workDisplay() {
     gallery.appendChild(cardsTemplate(card)); // Génère la carte et l'ajoute à la galerie
   });
 }
+
 
 
 // =============================================

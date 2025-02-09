@@ -219,6 +219,8 @@ li:hover {
 
 #introduction article {
   flex: 1;
+  font-size: 18px; /* Augmente la taille de la police */
+
 }
 
 #introduction h2 {
@@ -280,14 +282,17 @@ li:hover {
 
 .btn {
   border-radius: 60px;
-  padding: 1.2em 1.8em;
+  padding: 0.5em 1.2em; /* Réduction du padding vertical */
   font-family: "Syne";
-  font-size: 16px;
+  font-size: 14 px; 
   font-weight: 700;
   border: 1px solid #1d6154;
   color: #1d6154;
   background: none;
   transition: 0.3s ease;
+  display: flex; /* Active le flexbox */
+  align-items: center; /* Centre verticalement */
+  justify-content: center; /* Centre horizontalement */
 }
 
 .btn:hover {
@@ -302,11 +307,26 @@ li:hover {
   color: #fffef8;
 }
 
+#login {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centre horizontalement */
+  justify-content: center; /* Centre verticalement si nécessaire */
+  text-align: center;
+  width: 100%;
+}
+
+#login h2 {
+  text-align: center;
+  font-size: 24px; /* Ajuste la taille */
+  font-weight: 700;
+  margin-bottom: 20px; /* Ajoute un espace sous le titre */
+}
+
 #loginForm {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Permet aux éléments de s'aligner correctement */
 }
 
 #loginForm label {
@@ -385,17 +405,12 @@ input[type="submit"] {
 
 footer {
   background-color: white;
-  position: absolute;
-  left: 0;
   width: 100%;
   height: 50px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-}
-
-#footerLogin {
-  bottom: 0;
+  position: relative;
 }
 
 footer nav ul {
@@ -439,5 +454,6 @@ form textarea {
 }
 
 .forgotPassword {
-  text-decoration: underline;
-}
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;}
