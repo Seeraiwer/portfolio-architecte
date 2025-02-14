@@ -3,6 +3,7 @@ const api = "http://localhost:5678/api/";
 
 // Récupération du token utilisateur depuis le localStorage
 const token = localStorage.getItem("token");
+console.log(token);
 
 // Variables globales
 let categoryIdValue = ""; // Stocke l'ID de la catégorie sélectionnée pour le filtrage
@@ -30,7 +31,7 @@ const imageUrls = []; // Stocke les URLs des images des projets
  */
 async function fetchApiWorks() {
   try {
-    const response = await fetch(api + "works"); // Appel API pour récupérer les projets
+    const response = await fetch(api + "works"); // Appel API GET pour récupérer les projets
     const data = await response.json(); // Conversion en JSON
     cards = data; // Stockage des projets
 
