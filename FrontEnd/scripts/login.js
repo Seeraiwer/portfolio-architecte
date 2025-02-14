@@ -76,7 +76,6 @@ async function loginUser() {
       console.log(logUser);
       loginError.textContent = "Identifiants incorrects. Veuillez réessayer.";
       loginError.style.display = "block";
-
       return;
     } else if (data.error) {
       passwordError.textContent = "Erreur dans le mot de passe !!";
