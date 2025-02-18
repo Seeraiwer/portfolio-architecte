@@ -1,197 +1,413 @@
-// Définition de l'URL de base de l'API
-const api = "http://localhost:5678/api/";
-
-// Récupération du token utilisateur depuis le localStorage
-const token = localStorage.getItem("token");
-console.log(token);
-
-// Variables globales
-let categoryIdValue = ""; // Stocke l'ID de la catégorie sélectionnée pour le filtrage
-let categories = []; // Stocke la liste des catégories récupérées depuis l'API
-let btnTitle = []; // Stocke les titres des boutons de filtrage
-
-// Sélection des éléments du DOM
-const btnSort = document.querySelectorAll(".btn"); // Tous les boutons de filtrage
-const filterButtons = document.createElement("div"); // Conteneur des boutons de filtre
-const portfolioSection = document.querySelector("#portfolio"); // Section du portfolio
-
-// Insère le conteneur des boutons juste après le titre "Mes Projets"
-portfolioSection
-  .querySelector("h2")
-  .insertAdjacentElement("afterend", filterButtons);
-
-const imageUrls = []; // Stocke les URLs des images des projets
-
-// =============================================
-// RÉCUPÉRATION DES DONNÉES DE L'API
-// =============================================
-
-/**
- * Récupère la liste des projets depuis l'API et met à jour l'affichage.
- */
-async function fetchApiWorks() {
-  try {
-    const response = await fetch(api + "works"); // Appel API GET pour récupérer les projets
-    const data = await response.json(); // Conversion en JSON
-    cards = data; // Stockage des projets
-
-    const btnTitle = getButtonTitles(cards); // Récupération des titres uniques des catégories
-    console.log(`Titres des boutons filtres : ${btnTitle.join(" / ")}`);
-    console.log(cards);
-
-    filtersBtn(btnTitle); // Génération des boutons de filtre
-    workDisplay(cards); // Affichage des projets dans la galerie
-  } catch (error) {
-    console.error("Erreur lors du chargement des projets:", error);
-  }
-}
-
-/**
- * Récupère la liste des catégories depuis l'API et met à jour la variable globale `categories`.
- */
-async function fetchApiCategories() {
-  try {
-    const response = await fetch(api + "categories"); // Appel API pour récupérer les catégories
-    categories = await response.json(); // Conversion en JSON et stockage
-    console.log(categories);
-  } catch (error) {
-    console.error("Erreur lors du chargement des catégories:", error);
-  }
-}
-
-// =============================================
-// TRAITEMENT DES DONNÉES
-// =============================================
-
-/**
- * Extrait les titres de catégories uniques à partir de la liste des projets.
- * @param {Array} cards - Tableau des projets récupérés depuis l'API.
- * @returns {Array} - Tableau des noms de catégories uniques.
- */
-function getButtonTitles(cards) {
-  return [...new Set(cards.map((card) => card.category.name))]; // Retourne une liste unique des catégories
-}
-
-// =============================================
-// CRÉATION & INJECTION DES BOUTONS DE FILTRAGE
-// =============================================
-
-/**
- * Génère les boutons de filtrage et les insère dans le DOM.
- * @param {Array} btnTitle - Liste des catégories uniques pour générer les boutons.
- */
-function filtersBtn(btnTitle) {
-  // Création du bouton "Tous" pour afficher tous les projets
-  const allButton = document.createElement("button"); // Crée un élément <button>
-  allButton.classList.add("btn", "active"); // Ajoute les classes "btn" et "active" (ce bouton est sélectionné par défaut)
-  allButton.textContent = "Tous"; // Définit le texte du bouton comme "Tous"
-  filterButtons.appendChild(allButton); // Ajoute le bouton au conteneur des filtres
-  filterButtons.classList.add("filter"); // Ajoute une classe "filter" au conteneur pour le styliser
-
-  // Création des boutons dynamiques pour chaque catégorie reçue en paramètre
-  const buttons = [
-    allButton, // Le bouton "Tous" est inclus en premier dans la liste des boutons
-    ...btnTitle.map((categoryName) => {
-      // Parcourt le tableau `btnTitle` contenant les noms des catégories
-      const button = document.createElement("button"); // Crée un bouton pour chaque catégorie
-      button.classList.add("btn"); // Ajoute la classe "btn" pour le style
-      button.textContent = categoryName; // Définit le texte du bouton comme le nom de la catégorie
-      filterButtons.appendChild(button); // Ajoute le bouton au conteneur des filtres
-      return button; // Retourne le bouton créé pour qu'il soit ajouté au tableau `buttons`
-    }),
-  ];
-
-  // Gestion des événements de clic sur chaque bouton de filtrage
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      categoryIdValue = e.target.textContent; // Stocke le texte du bouton cliqué (nom de la catégorie sélectionnée)
-      console.log(categoryIdValue); // Affiche la catégorie sélectionnée dans la console (utile pour le débogage)
-
-      // Supprime la classe "active" de tous les boutons pour désactiver l'ancien filtre
-      buttons.forEach((btn) => btn.classList.remove("active"));
-
-      // Ajoute la classe "active" au bouton qui vient d'être cliqué
-      e.target.classList.add("active");
-
-      workDisplay(); // Met à jour l'affichage des projets en fonction du filtre sélectionné
-    });
-  });
-}
-
-// =============================================
-// GÉNÉRATION DES CARTES DE PROJETS
-// =============================================
-
-/**
- * Génère un élément de projet sous forme de carte et l'ajoute au DOM.
- * @param {Object} card - Objet contenant les informations du projet.
- * @returns {HTMLElement} - Élément figure représentant le projet.
- */
-function cardsTemplate(card) {
-  // Création d'un élément <figure> qui servira de conteneur pour la carte
-  const cardDisplay = document.createElement("figure");
-
-  // Ajout d'un identifiant unique pour chaque carte (utile pour les interactions dynamiques)
-  cardDisplay.setAttribute("data-card-id", card.id);
-  cardDisplay.setAttribute("data-category-id", card.categoryId);
-
-  // Création de l'image du projet
-  const imgCard = document.createElement("img");
-  imgCard.setAttribute("src", card.imageUrl); // Définit la source de l'image
-  imgCard.setAttribute("alt", "photo de " + card.title); // Texte alternatif pour l'accessibilité et le SEO
-
-  // Création du titre du projet sous forme de légende (<figcaption>)
-  const titleCard = document.createElement("figcaption");
-  titleCard.textContent = card.title; // Ajoute le titre du projet
-
-  // Ajout de l'image et du titre à l'élément <figure>
-  cardDisplay.appendChild(imgCard);
-  cardDisplay.appendChild(titleCard);
-
-  // Retourne la carte créée (peut être utilisé pour d'autres manipulations si nécessaire)
-  return cardDisplay;
-}
-// Fonction pour ajouter plusieurs cartes en une seule opération DOM
-function displayCards(cardsArray) {
-  const fragment = document.createDocumentFragment(); // Crée un fragment DOM pour optimiser l'ajout
-
-  cardsArray.forEach((card) => {
-    const cardElement = cardsTemplate(card); // Génère une carte
-    fragment.appendChild(cardElement); // Ajoute la carte au fragment
-  });
-
-  portfolioSection.appendChild(fragment); // Ajoute toutes les cartes en une seule opération DOM
-}
-
-// =============================================
-// AFFICHAGE DES PROJETS FILTRÉS
-// =============================================
-
-function workDisplay() {
-  const gallery = document.querySelector(".gallery"); // Sélectionne l'élément contenant la galerie
-  const cardDisplay = new Set(); // Utilisation d'un Set pour éviter les doublons
-  gallery.innerHTML = ""; // Vide la galerie avant d'ajouter les nouvelles cartes filtrées
-
-  // 🔍 Filtrage des projets en fonction de la catégorie sélectionnée
-  cards.forEach((card) => {
-    if (categoryIdValue === "Tous" || card.category.name === categoryIdValue) {
-      cardDisplay.add(card); // Ajoute le projet au Set si la catégorie correspond
-    }
-  });
-
-  // 🖼️ Ajout des projets filtrés à la galerie
-  cardDisplay.forEach((card) => {
-    gallery.appendChild(cardsTemplate(card)); // Génère la carte et l'ajoute à la galerie
-  });
-}
-
-// =============================================
-// CHARGEMENT DES DONNÉES AU DÉMARRAGE
-// =============================================
-
-window.addEventListener("load", () => {
-  fetchApiWorks(); // 🔄 Récupère les projets depuis l'API
-  fetchApiCategories(); // 📂 Récupère les catégories depuis l'API
-  categoryIdValue = "Tous"; // 🏷️ Définit la catégorie par défaut sur "Tous"
-  checkToken(); // 🔒 Vérifie si l'utilisateur est connecté pour gérer l'affichage
-});
+/* =============================================
+   CONSTANTES ET VARIABLES GLOBALES
+   ============================================= */
+   const API_URL = "http://localhost:5678/api/";
+   const token = localStorage.getItem("token");
+   
+   let selectedCategory = "Tous"; // Catégorie sélectionnée (par défaut "Tous")
+   let works = [];                // Liste des projets récupérés
+   let categories = [];           // Liste des catégories
+   
+   // Création du conteneur des boutons de filtre
+   const filterButtonsContainer = document.createElement("div");
+   filterButtonsContainer.classList.add("filter");
+   
+   // Sélection de la section portfolio et insertion du conteneur de boutons après le titre
+   const portfolioSection = document.querySelector("#portfolio");
+   const portfolioTitle = portfolioSection.querySelector("h2");
+   portfolioTitle.insertAdjacentElement("afterend", filterButtonsContainer);
+   
+   /* =============================================
+      MODULE API : GESTION DES APPELS API
+      ============================================= */
+   const API = {
+     async fetchData(endpoint) {
+       const response = await fetch(API_URL + endpoint);
+       if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+       return response.json();
+     },
+     async getWorks() {
+       return this.fetchData("works");
+     },
+     async getCategories() {
+       return this.fetchData("categories");
+     },
+     async deleteWork(id) {
+       const response = await fetch(`${API_URL}works/${id}`, {
+         method: "DELETE",
+         headers: {
+           Accept: "*/*",
+           Authorization: `Bearer ${token}`,
+         },
+       });
+       if (!response.ok) throw new Error(response.statusText);
+       return response;
+     },
+   };
+   
+   /* =============================================
+      FONCTION UTILITAIRE DE GESTION DES ERREURS
+      ============================================= */
+   function handleError(message, error) {
+     console.error(message, error);
+     // Vous pouvez également afficher un message à l'utilisateur ici
+   }
+   
+   /* =============================================
+      MODULE UI : GESTION DU DOM & AFFICHAGE
+      ============================================= */
+   
+   /**
+    * Extrait les noms de catégories uniques à partir du tableau des projets.
+    * @param {Array} worksArray - Liste des projets.
+    * @returns {Array} Liste des noms de catégories uniques.
+    */
+   function getUniqueCategoryTitles(worksArray) {
+     return [...new Set(worksArray.map(({ category }) => category.name))];
+   }
+   
+   /**
+    * Crée et retourne un élément <figure> représentant un projet.
+    * @param {Object} work - Objet projet.
+    * @returns {HTMLElement} Élément figure du projet.
+    */
+   function createWorkCard({ id, imageUrl, title, category, categoryId }) {
+     const figure = document.createElement("figure");
+     figure.dataset.cardId = id;
+     figure.dataset.categoryId = categoryId;
+   
+     const img = document.createElement("img");
+     img.src = imageUrl;
+     img.alt = `Photo de ${title}`;
+   
+     const caption = document.createElement("figcaption");
+     caption.textContent = title;
+   
+     figure.appendChild(img);
+     figure.appendChild(caption);
+     return figure;
+   }
+   
+   /**
+    * Affiche les projets dans la galerie en fonction de la catégorie sélectionnée.
+    */
+   function displayWorks() {
+     const gallery = document.querySelector(".gallery");
+     gallery.innerHTML = "";
+     const filteredWorks = works.filter(
+       work => selectedCategory === "Tous" || work.category.name === selectedCategory
+     );
+     filteredWorks.forEach(work => gallery.appendChild(createWorkCard(work)));
+   }
+   
+   /**
+    * Crée et initialise les boutons de filtre.
+    * Utilise l'event delegation pour la gestion des clics.
+    * @param {Array} buttonTitles - Liste des noms de catégories uniques.
+    */
+   function createFilterButtons(buttonTitles) {
+     filterButtonsContainer.innerHTML = "";
+     // Bouton "Tous"
+     const allButton = document.createElement("button");
+     allButton.classList.add("btn", "active");
+     allButton.textContent = "Tous";
+     filterButtonsContainer.appendChild(allButton);
+   
+     // Boutons pour chaque catégorie
+     buttonTitles.forEach(name => {
+       const btn = document.createElement("button");
+       btn.classList.add("btn");
+       btn.textContent = name;
+       filterButtonsContainer.appendChild(btn);
+     });
+   
+     // Gestion via event delegation
+     filterButtonsContainer.addEventListener("click", event => {
+       if (event.target.tagName === "BUTTON") {
+         selectedCategory = event.target.textContent;
+         filterButtonsContainer.querySelectorAll("button").forEach(btn => btn.classList.remove("active"));
+         event.target.classList.add("active");
+         displayWorks();
+       }
+     });
+   }
+   
+   /* =============================================
+      MODE ADMIN : CONFIGURATION & INTERFACE
+      ============================================= */
+   
+   /**
+    * Vérifie la présence d'un token et active le mode admin le cas échéant.
+    */
+   function checkToken() {
+     if (token) {
+       console.log("Token détecté, mode ADMIN activé.");
+       activateAdminMode();
+     } else {
+       console.log("Aucun token détecté, mode utilisateur.");
+     }
+   }
+   
+   /**
+    * Supprime le token et les images supprimées stockées en session.
+    */
+   function removeToken() {
+     localStorage.removeItem("token");
+     sessionStorage.removeItem("deletedImages");
+   }
+   window.addEventListener("unload", removeToken);
+   
+   /**
+    * Active les fonctionnalités du mode admin.
+    */
+   function activateAdminMode() {
+     setupAdminInterface();
+   
+     // Ouverture de la modale via le titre "Mode édition" dans la galerie
+     const titleProjectRemove = document.getElementById("titleProjectRemove");
+     titleProjectRemove.addEventListener("click", event => {
+       event.preventDefault();
+       insertModalHTML();
+       openModal();
+     });
+   
+     // Bouton de suppression des projets via l'API
+     const deleteWorksButton = document.querySelector("body > div > button");
+     if (deleteWorksButton) {
+       deleteWorksButton.addEventListener("click", event => {
+         event.preventDefault();
+         deleteWorksFromApi();
+       });
+     }
+   }
+   
+   /**
+    * Configure l'interface du mode admin :
+    * - Bandeau "Mode édition"
+    * - Injections dans la section d'introduction et portfolio
+    * - Lien de déconnexion
+    */
+   function setupAdminInterface() {
+     // Création du bandeau "Mode édition"
+     const flagEditor = document.createElement("div");
+     flagEditor.classList.add("flagEditor");
+     flagEditor.style.zIndex = "1000"; // Toujours au-dessus
+   
+     document.body.insertAdjacentElement("afterbegin", flagEditor);
+   
+     const spanEditor = document.createElement("span");
+     spanEditor.classList.add("projectRemove");
+     spanEditor.textContent = "Mode édition";
+   
+     const iconEditor = document.createElement("i");
+     iconEditor.className = "fa-regular fa-pen-to-square";
+     spanEditor.insertBefore(iconEditor, spanEditor.firstChild);
+   
+     flagEditor.appendChild(spanEditor);
+     // Injection dans la section "introduction" et dans le titre du portfolio
+     const introductionFigure = document.querySelector("#introduction figure");
+     const portfolioTitle = document.querySelector("#portfolio > h2");
+   
+     const spanFigure = spanEditor.cloneNode(true);
+     spanFigure.classList.remove("projectRemove");
+     spanFigure.classList.add("figureRemove");
+     introductionFigure.appendChild(spanFigure);
+   
+     const spanPortfolio = spanEditor.cloneNode(true);
+     spanPortfolio.classList.remove("projectRemove");
+     spanPortfolio.id = "titleProjectRemove";
+     portfolioTitle.appendChild(spanPortfolio);
+   
+     // Lien de déconnexion dans le menu
+     const logoutListItem = document.querySelector("body > header > nav > ul > li:nth-child(3)");
+     const logoutLink = document.createElement("a");
+     logoutLink.href = "./index.html";
+     logoutLink.textContent = "Logout";
+     logoutListItem.innerHTML = "";
+     logoutListItem.appendChild(logoutLink);
+     logoutLink.addEventListener("click", event => {
+       event.preventDefault();
+       removeToken();
+       window.location.assign("./index.html");
+     });
+   
+     // Ajoute une marge supérieure pour ne pas masquer le contenu
+     document.body.classList.add("marginTop");
+     // Optionnel : retirer les boutons de filtre en mode admin
+     filterButtonsContainer.remove();
+   }
+   
+   /* =============================================
+      MODALE : AFFICHAGE, ACTIVATION & FERMETURE
+      ============================================= */
+   
+   /**
+    * Ouvre et affiche la modale de suppression.
+    */
+   function openModal() {
+     // Réinitialise la grille modale
+     document.getElementById("modalGrid").innerHTML = "";
+   
+     // Récupère les URLs uniques de la galerie
+     const images = [...document.querySelectorAll(".gallery img")].map(img => img.getAttribute("src"));
+     const uniqueImages = new Set(images);
+   
+     // Crée pour chaque image un élément figure dans la modale
+     const imageElements = [...uniqueImages].map((imgSrc, index) => {
+       const figure = document.createElement("figure");
+       figure.dataset.cardId = works[index].id;
+   
+       const img = document.createElement("img");
+       img.src = imgSrc;
+   
+       const caption = document.createElement("p");
+       caption.textContent = "éditer";
+   
+       const deleteIcon = document.createElement("i");
+       deleteIcon.id = "deleteIcon";
+       deleteIcon.classList.add("fa-solid", "fa-trash-can", "iconModal");
+       deleteIcon.setAttribute("aria-hidden", "true");
+   
+       figure.appendChild(img);
+       figure.appendChild(caption);
+       figure.appendChild(deleteIcon);
+   
+       // Ajoute une icône de déplacement sur le premier élément
+       if (index === 0) {
+         const moveIcon = document.createElement("i");
+         moveIcon.id = "moveIcon";
+         moveIcon.classList.add("fa-solid", "fa-arrows-up-down-left-right", "iconModal");
+         figure.appendChild(moveIcon);
+       }
+   
+       // Suppression de l'image via la modale
+       deleteIcon.addEventListener("click", async event => {
+         event.preventDefault();
+         const cardId = figure.dataset.cardId;
+         removeWorkCard(cardId);
+         updateDeletedImages(cardId);
+       });
+   
+       return figure;
+     });
+   
+     document.getElementById("modalGrid").append(...imageElements);
+     displayModal();
+   }
+   
+   /**
+    * Ferme la modale et réactive le défilement de la page.
+    */
+   function closeModal() {
+     document.getElementById("modal").remove();
+     enableScroll();
+   }
+   
+   /**
+    * Affiche la modale et gère sa fermeture.
+    */
+   function displayModal() {
+     const modal = document.querySelector("#modal");
+     const closeModalBtn = document.querySelector("#closeModal");
+     closeModalBtn.addEventListener("click", closeModal);
+     window.addEventListener("click", event => {
+       if (event.target === modal) closeModal();
+     });
+     disableScroll();
+   }
+   
+   /**
+    * Désactive le défilement de la page.
+    */
+   function disableScroll() {
+     document.body.classList.add("modalOpen");
+   }
+   
+   /**
+    * Réactive le défilement de la page.
+    */
+   function enableScroll() {
+     document.body.classList.remove("modalOpen");
+   }
+   
+   /**
+    * Insère le HTML de la modale dans le DOM.
+    * Seule la section Galerie est conservée ; la partie formulaire d'ajout a été retirée.
+    */
+   function insertModalHTML() {
+     document.body.insertAdjacentHTML("beforeend", `
+       <aside id="modal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+         <div id="modalContainer">
+           <i id="closeModal" class="fa-solid fa-xmark"></i>
+           <i id="previewModal" class="fa-solid fa-arrow-left"></i>
+           <!-- Galerie de photos -->
+           <section class="modalTemplate" id="modalEdit">
+             <div id="editionGallery">
+               <h2 class="modalTitle">Galerie photo</h2>
+               <div id="modalGrid"></div>
+             </div>
+             <div class="footerModal">
+               <hr>
+               <input type="submit" value="Ajouter une photo" id="editModal">
+               <p id="deleteAllWorks">Supprimer la gallerie</p>
+             </div>
+           </section>
+         </div>
+       </aside>
+     `);
+   }
+   
+   /**
+    * Supprime une carte de projet du DOM.
+    * @param {string} cardId - ID de la carte.
+    */
+   function removeWorkCard(cardId) {
+     const card = document.querySelector(`[data-card-id="${cardId}"]`);
+     if (card && card.parentNode) card.parentNode.removeChild(card);
+   }
+   
+   /**
+    * Met à jour la liste des images supprimées dans le sessionStorage.
+    * @param {string} cardId - ID de l'image supprimée.
+    */
+   function updateDeletedImages(cardId) {
+     const deleted = JSON.parse(sessionStorage.getItem("deletedImages")) || {};
+     deleted[cardId] = true;
+     sessionStorage.setItem("deletedImages", JSON.stringify(deleted));
+   }
+   
+   /**
+    * Supprime les images marquées comme supprimées via l'API.
+    */
+   function deleteWorksFromApi() {
+     const deleted = JSON.parse(sessionStorage.getItem("deletedImages"));
+     if (!deleted) return;
+     Object.keys(deleted).forEach(async id => {
+       try {
+         if (!token) return console.log({ error: "Pas connecté" });
+         await API.deleteWork(id);
+         console.log(`Image avec ID ${id} supprimée`);
+       } catch (error) {
+         handleError(`Erreur lors de la suppression de l'image avec ID ${id}:`, error);
+       }
+     });
+   }
+   
+   /* =============================================
+      INITIALISATION
+      ============================================= */
+   async function initialize() {
+     try {
+       works = await API.getWorks();
+       const buttonTitles = getUniqueCategoryTitles(works);
+       createFilterButtons(buttonTitles);
+       displayWorks();
+       categories = await API.getCategories();
+     } catch (error) {
+       handleError("Erreur lors du chargement initial :", error);
+     }
+     checkToken();
+   }
+   
+   window.addEventListener("DOMContentLoaded", initialize);
+   
