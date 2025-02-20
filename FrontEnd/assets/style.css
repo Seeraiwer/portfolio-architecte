@@ -186,7 +186,7 @@ h1 {
   color: #b1663c;
 }
 
-h1>span {
+h1 > span {
   font-family: "Work Sans";
   font-size: 10px;
   letter-spacing: 0.1em;
@@ -287,6 +287,54 @@ li:hover {
 
 .gallery figure img:hover {
   transform: scale(1.2);
+}
+
+/* Icône poubelle en haut à droite de chaque image */
+.delete-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: black;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Pied de la modale */
+.footerModal {
+  margin-top: 20px;
+}
+
+/* Bouton "Ajouter une photo" */
+.add-photo-btn {
+  background-color: #1d6154;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 237px;
+  height: 36px;
+}
+
+.add-photo-btn:hover {
+  background-color: #144d42;
+}
+
+/* Icône de fermeture */
+#closeModal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
 }
 
 /* Boutons de filtre (ex. pour trier la galerie) */
@@ -478,7 +526,7 @@ footer nav ul {
   font-size: 16px;
 }
 
-.projectRemove>i,
+.projectRemove > i,
 #titleProjectRemove i {
   padding-right: 10px;
 }
@@ -542,7 +590,8 @@ footer nav ul {
   justify-content: center;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
 }
 
 .modalOpen {
@@ -552,23 +601,25 @@ footer nav ul {
 #modalContainer {
   position: relative;
   background-color: white;
-  overflow: auto;
-  width: 35%;
-  min-width: 700px;
-  min-height: 700px;
+  width: 50%;
+  max-width: 800px;
   border-radius: 10px;
-  padding: 70px 15% 10px;
+  padding: 40px 20px;
+  text-align: center;
 }
 
 #closeModal,
 #previewModal {
   font-size: 1.5em;
   position: absolute;
-  top: 20px;
+  top: 24px;
+  right: 24px;
+  font-size: 24px;
 }
 
 #closeModal {
   right: 20px;
+  color: black;
 }
 
 #previewModal {
@@ -610,12 +661,14 @@ footer nav ul {
 }
 
 #modalGrid {
+  width: auto;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 10px 25px;
+  column-gap: 10px;
+  row-gap: 25px;
 }
 
-#modalGrid>figure {
+#modalGrid > figure {
   position: relative;
 }
 
@@ -658,8 +711,11 @@ footer nav ul {
 hr {
   width: 100%;
 }
-
-.modalTemplate input[type="submit"],
+.modalTemplate input[type="submit"] {
+  width: 60%;
+  text-align: center;
+  padding: 10px 45px;
+}
 .modalTemplate input[type="button"] {
   width: 60%;
   text-align: center;
