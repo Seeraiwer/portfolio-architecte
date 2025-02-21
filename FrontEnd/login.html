@@ -44,13 +44,14 @@
             <h2>Log In</h2>
 
             <form id="loginForm">
+                <p class="loginError"></p> <!--required pour double sécurité-->
+                <p class="passwordError"></p> <!--required pour double sécurité-->
+
                 <label for="email">E-mail</label>
                 <input type="email" name="email" id="email">
-                <p class="loginError"></p> <!--required pour double sécurité-->
 
                 <label for="password">Mot de Passe</label>
                 <input type="password" id="password" name="password" minlength="4" maxlength="15" autocomplete="off">
-                <p class="passwordError"></p> <!--required pour double sécurité-->
 
 
                 <input type="submit" value="Se connecter">

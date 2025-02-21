@@ -198,7 +198,7 @@ function setupAdminInterface() {
 
   const spanEditor = document.createElement("span");
   spanEditor.classList.add("projectRemove");
-  spanEditor.textContent = "Mode édition";
+  spanEditor.textContent = "Modifier";
 
   const iconEditor = document.createElement("i");
   iconEditor.className = "fa-regular fa-pen-to-square";

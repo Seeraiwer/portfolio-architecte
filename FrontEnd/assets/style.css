@@ -118,7 +118,6 @@ login {
   margin: auto;
   font-family: "Work Sans";
   font-size: 14px;
-  padding-top: 80px;
 }
 
 /* Suppression des styles par défaut des listes */
@@ -513,7 +512,7 @@ footer nav ul {
   align-items: center;
   justify-content: center;
   background-color: black;
-  height: 80px;
+  height: 59px;
   width: 100%;
 }
 
@@ -686,7 +685,7 @@ footer nav ul {
 }
 
 #deleteIcon:hover {
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 #moveIcon {
