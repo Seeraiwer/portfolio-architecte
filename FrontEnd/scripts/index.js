@@ -334,9 +334,8 @@ function insertModalHTML() {
   document.body.insertAdjacentHTML("beforeend", `
       <aside id="modal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div id="modalContainer">
-           <span" class="fa-solid fa-xmark"></span>
+          <span class="fa-solid fa-xmark" id="closeModal"></span>
            <i id="previewModal" class="fa-solid fa-arrow-left"></i>
-           <!-- Galerie de photos -->
            <section class="modalTemplate" id="modalEdit">
              <div id="editionGallery">
           <h2 class="modalTitle">Galerie photo</h2>
