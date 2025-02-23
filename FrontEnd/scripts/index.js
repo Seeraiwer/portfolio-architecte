@@ -21,6 +21,7 @@ portfolioTitle.insertAdjacentElement("afterend", filterButtonsContainer);
    MODULE API : GESTION DES APPELS API
    ============================================= */
 const API = {
+  // Effectue une requête fetch sur l'endpoint donné et renvoie le résultat en JSON.
   async fetchData(endpoint) {
     const response = await fetch(API_URL + endpoint);
     if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
@@ -43,11 +44,25 @@ const API = {
     if (!response.ok) throw new Error(response.statusText);
     return response;
   },
+  // Fonction asynchrone pour ajouter un nouveau projet via une requête POST à l'API
+async addWork(formData) {
+  const response = await fetch(API_URL + "works", {
+      method: "POST",
+    headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+    },
+      body: formData,
+  });
+  if (!response.ok) throw new Error("La requête POST a échoué");
+  return response.json();
+}
 };
 
 /* =============================================
    FONCTION UTILITAIRE DE GESTION DES ERREURS
    ============================================= */
+// Affiche l'erreur dans la console et peut être étendu pour informer l'utilisateur
 function handleError(message, error) {
   console.error(message, error);
   // Vous pouvez également afficher un message à l'utilisateur ici
@@ -59,6 +74,7 @@ function handleError(message, error) {
 
 /**
  * Extrait les noms de catégories uniques à partir du tableau des projets.
+ * L'utilisation de Set permet d'éviter les doublons.
  * @param {Array} worksArray - Liste des projets.
  * @returns {Array} Liste des noms de catégories uniques.
  */
@@ -90,9 +106,14 @@ function createWorkCard({ id, imageUrl, title, category, categoryId }) {
 
 /**
  * Affiche les projets dans la galerie en fonction de la catégorie sélectionnée.
+ * Vérifie que l'élément .gallery existe.
  */
 function displayWorks() {
   const gallery = document.querySelector(".gallery");
+  if (!gallery) {
+    console.warn("Élément .gallery introuvable dans le DOM.");
+    return;
+  }
   gallery.innerHTML = "";
   const filteredWorks = works.filter(
     work => selectedCategory === "Tous" || work.category.name === selectedCategory
@@ -106,8 +127,9 @@ function displayWorks() {
  * @param {Array} buttonTitles - Liste des noms de catégories uniques.
  */
 function createFilterButtons(buttonTitles) {
-  // Réinitialise le conteneur
+  // Réinitialise le conteneur pour éviter les doublons
   filterButtonsContainer.innerHTML = "";
+
   // Bouton "Tous"
   const allButton = document.createElement("button");
   allButton.classList.add("btn", "active");
@@ -138,7 +160,7 @@ function createFilterButtons(buttonTitles) {
    ============================================= */
 
 /**
- * Vérifie la présence d'un token et active le mode admin le cas échéant.
+ * Vérifie la présence d'un token et active le mode admin si présent.
  */
 function checkToken() {
   if (token) {
@@ -166,11 +188,14 @@ function activateAdminMode() {
 
   // Ouverture de la modale via le titre "Mode édition" dans la galerie
   const titleProjectRemove = document.getElementById("titleProjectRemove");
+  if (titleProjectRemove) {
   titleProjectRemove.addEventListener("click", event => {
     event.preventDefault();
-    insertModalHTML();
+      insertModalHTML(); // Insère le HTML de la modale si elle n'existe pas déjà
     openModal();
-  });
+    setupEditModal();
+    }, { once: true }); // On souhaite que l'événement soit ajouté une seule fois
+  }
 
   // Bouton de suppression des projets via l'API
   const deleteWorksButton = document.querySelector("body > div > button");
@@ -193,30 +218,31 @@ function setupAdminInterface() {
   const flagEditor = document.createElement("div");
   flagEditor.classList.add("flagEditor");
   flagEditor.style.zIndex = "1000"; // Toujours au-dessus
-
   document.body.insertAdjacentElement("afterbegin", flagEditor);
 
+  // Création d'un span avec le libellé "Mode édition" et une icône
   const spanEditor = document.createElement("span");
   spanEditor.classList.add("projectRemove");
-  spanEditor.textContent = "Modifier";
-
+  spanEditor.textContent = "Mode édition"; // Texte mis à jour
   const iconEditor = document.createElement("i");
   iconEditor.className = "fa-regular fa-pen-to-square";
   spanEditor.insertBefore(iconEditor, spanEditor.firstChild);
-
   flagEditor.appendChild(spanEditor);
+
+  // Création et ajout du bouton "Modifier" pour ouvrir la modale d'ajout de médias
+  const modifyButton = document.createElement("button");
+  modifyButton.id = "modifyButton";
+  modifyButton.textContent = "Modifier";
+  modifyButton.classList.add("btn");
+  flagEditor.appendChild(modifyButton);
+
   // Injection dans la section "introduction" et dans le titre du portfolio
-  const introductionFigure = document.querySelector("#introduction figure");
   const portfolioTitle = document.querySelector("#portfolio > h2");
-
-  const spanFigure = spanEditor.cloneNode(true);
-  spanFigure.classList.remove("projectRemove");
-  spanFigure.classList.add("figureRemove");
-  introductionFigure.appendChild(spanFigure);
-
+  
   const spanPortfolio = spanEditor.cloneNode(true);
   spanPortfolio.classList.remove("projectRemove");
   spanPortfolio.id = "titleProjectRemove";
+  spanPortfolio.textContent = "Modifier";
   portfolioTitle.appendChild(spanPortfolio);
 
   // Lien de déconnexion dans le menu
@@ -232,7 +258,7 @@ function setupAdminInterface() {
     window.location.assign("./index.html");
   });
 
-  // Ajoute une marge supérieure pour ne pas masquer le contenu
+  // Ajoute une marge supérieure pour éviter que le bandeau ne masque le contenu
   document.body.classList.add("marginTop");
   // Optionnel : retirer les boutons de filtre en mode admin
   filterButtonsContainer.remove();
@@ -240,6 +266,7 @@ function setupAdminInterface() {
 
 /* =============================================
    MODALE : AFFICHAGE, ACTIVATION & FERMETURE
+   (Insertion de la modale d'édition)
    ============================================= */
 
 /**
@@ -274,12 +301,22 @@ function openModal() {
     figure.appendChild(deleteIcon);
 
     // Suppression de l'image via la modale
-    deleteIcon.addEventListener("click", async event => {
-      event.preventDefault();
-      const cardId = figure.dataset.cardId;
-      removeWorkCard(cardId);
-      updateDeletedImages(cardId);
-    });
+deleteIcon.addEventListener("click", async event => {
+  event.preventDefault();
+  const cardId = figure.dataset.cardId; // Récupère l'ID du travail
+  try {
+    // 1. Suppression côté API
+    await API.deleteWork(cardId);
+    console.log(`Image avec ID ${cardId} supprimée côté serveur`);
+
+    // 2. Suppression dans le DOM
+    removeWorkCard(cardId);
+    console.log(`Image avec ID ${cardId} retirée du DOM`);
+  } catch (error) {
+    handleError(`Erreur lors de la suppression de l'image ID ${cardId} :`, error);
+  }
+});
+
 
     return figure;
   });
@@ -416,6 +453,144 @@ function deleteWorksFromApi() {
       handleError(`Erreur lors de la suppression de l'image avec ID ${id}:`, error);
     }
   });
+}
+
+/**
+ * Configure la modale pour l'édition et l'ajout d'images.
+ */
+function setupEditModal() {
+  const addProjectButton = document.getElementById("editModal");
+  const inputFile = document.getElementById("filetoUpload");
+  const selectCategory = document.getElementById("category");
+  const editSection = document.querySelector("#editSection");
+  const editForm = document.getElementById("editWorks");
+  const gallerySection = document.querySelector("#modalEdit");
+  const previewModal = document.querySelector("#previewModal");
+
+  let canSubmit = false;
+
+  // Bascule entre la galerie et le formulaire
+  addProjectButton.addEventListener("click", () => {
+    gallerySection.style.display = "none";
+    editSection.style.display = "";
+    previewModal.style.display = "initial";
+  });
+  previewModal.addEventListener("click", () => {
+    gallerySection.style.display = "";
+    editSection.style.display = "none";
+    previewModal.style.display = "none";
+  });
+
+  // Prévisualisation de l'image sélectionnée
+  inputFile.addEventListener("change", previewImage);
+
+  // Génère les options du <select> pour les catégories (si non déjà présentes)
+  if (selectCategory.options.length === 0) {
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = "";
+    selectCategory.appendChild(emptyOption);
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.textContent = category.name;
+      option.setAttribute("data-id", category.id);
+      selectCategory.appendChild(option);
+    });
+  }
+
+  // Validation en temps réel du formulaire
+  editSection.addEventListener("input", () => {
+    const titleInput = document.querySelector("#title");
+    const errorImg = document.getElementById("errorImg");
+    const titleError = document.querySelector("#ErrorTitleSubmit");
+    const categoryError = document.querySelector("#ErrorCategorySubmit");
+    const submitButton = document.querySelector("#editWorks .editFooter input[type=submit]");
+
+    const imageSelected = !!inputFile.files[0];
+    const titleValid = titleInput.value.trim().length > 0;
+    const categoryValid = selectCategory.value !== "";
+
+    errorImg.textContent = imageSelected ? "" : "Veuillez sélectionner une image";
+    titleError.textContent = titleValid ? "" : "Ajoutez un titre";
+    categoryError.textContent = categoryValid ? "" : "Choisissez une catégorie";
+
+    if (imageSelected && titleValid && categoryValid) {
+      submitButton.style.background = "#1d6154";
+      canSubmit = true;
+    } else {
+      submitButton.style.background = "grey";
+      canSubmit = false;
+    }
+  });
+
+  // Soumission du formulaire d'ajout d'image
+  editForm.addEventListener("submit", event => {
+    event.preventDefault();
+    if (canSubmit) {
+      const imageFile = inputFile.files[0];
+      const titleValue = document.querySelector("#title").value.trim();
+      const selectedOption = selectCategory.selectedOptions[0];
+      const categoryId = parseInt(selectedOption.getAttribute("data-id"));
+
+      const formData = new FormData();
+      formData.append("image", imageFile);
+      formData.append("title", titleValue);
+      formData.append("category", categoryId);
+
+      fetch(API_URL + "works", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      })
+        .then(response => {
+          if (!response.ok) throw new Error("La requête POST a échoué");
+          return response.json();
+        })
+        .then(data => {
+          console.log("Requête POST réussie :", data);
+          // Actualise la galerie en récupérant les travaux mis à jour
+          API.getWorks().then(fetchedWorks => {
+            works = fetchedWorks;
+            displayWorks();
+          });
+          closeModal();
+          inputFile.value = ""; // Réinitialise le champ de fichier
+        })
+        .catch(error => handleError("Erreur lors de la requête POST :", error));
+    } else {
+      console.log("Formulaire invalide !");
+    }
+  });
+}
+
+/**
+ * Prévisualise l'image sélectionnée dans le formulaire d'ajout.
+ */
+function previewImage() {
+  const inputFile = document.getElementById("filetoUpload");
+  const viewContainer = document.getElementById("addImageContainer");
+  const file = inputFile.files[0];
+  const maxSize = 4 * 1024 * 1024; // 4 Mo
+
+  // Vérification de la taille du fichier
+  if (file.size > maxSize) {
+    document.getElementById("errorImg").textContent = "Votre image est trop volumineuse";
+    console.log("Fichier > 4MO !");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener("load", function () {
+    viewContainer.innerHTML = "";
+    const img = document.createElement("img");
+    img.src = reader.result;
+    viewContainer.appendChild(img);
+    viewContainer.style.padding = "0";
+  });
+  reader.readAsDataURL(file);
 }
 
 /* =============================================
