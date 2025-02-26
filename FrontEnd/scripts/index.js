@@ -45,18 +45,18 @@ const API = {
     return response;
   },
   // Fonction asynchrone pour ajouter un nouveau projet via une requête POST à l'API
-async addWork(formData) {
-  const response = await fetch(API_URL + "works", {
+  async addWork(formData) {
+    const response = await fetch(API_URL + "works", {
       method: "POST",
-    headers: {
+      headers: {
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
-    },
+      },
       body: formData,
-  });
-  if (!response.ok) throw new Error("La requête POST a échoué");
-  return response.json();
-}
+    });
+    if (!response.ok) throw new Error("La requête POST a échoué");
+    return response.json();
+  }
 };
 
 /* =============================================
@@ -127,7 +127,7 @@ function displayWorks() {
  * @param {Array} buttonTitles - Liste des noms de catégories uniques.
  */
 function createFilterButtons(buttonTitles) {
-  // Réinitialise le conteneur pour éviter les doublons
+  // Réinitialise le conteneur pour éviter les doublons de boutons
   filterButtonsContainer.innerHTML = "";
 
   // Bouton "Tous"
@@ -148,6 +148,7 @@ function createFilterButtons(buttonTitles) {
   filterButtonsContainer.addEventListener("click", event => {
     if (event.target.tagName === "BUTTON") {
       selectedCategory = event.target.textContent;
+      // Met à jour le style pour indiquer le bouton actif
       filterButtonsContainer.querySelectorAll("button").forEach(btn => btn.classList.remove("active"));
       event.target.classList.add("active");
       displayWorks();
@@ -189,12 +190,12 @@ function activateAdminMode() {
   // Ouverture de la modale via le titre "Mode édition" dans la galerie
   const titleProjectRemove = document.getElementById("titleProjectRemove");
   if (titleProjectRemove) {
-  titleProjectRemove.addEventListener("click", event => {
-    event.preventDefault();
+    titleProjectRemove.addEventListener("click", event => {
+      event.preventDefault();
       insertModalHTML(); // Insère le HTML de la modale si elle n'existe pas déjà
-    openModal();
-    setupEditModal();
-    }, { once: true }); // On souhaite que l'événement soit ajouté une seule fois
+      openModal();
+      setupEditModal();
+    }, { once: true }); // L'événement est ajouté une seule fois
   }
 
   // Bouton de suppression des projets via l'API
@@ -223,7 +224,7 @@ function setupAdminInterface() {
   // Création d'un span avec le libellé "Mode édition" et une icône
   const spanEditor = document.createElement("span");
   spanEditor.classList.add("projectRemove");
-  spanEditor.textContent = "Mode édition"; // Texte mis à jour
+  spanEditor.textContent = "Mode édition";
   const iconEditor = document.createElement("i");
   iconEditor.className = "fa-regular fa-pen-to-square";
   spanEditor.insertBefore(iconEditor, spanEditor.firstChild);
@@ -238,7 +239,6 @@ function setupAdminInterface() {
 
   // Injection dans la section "introduction" et dans le titre du portfolio
   const portfolioTitle = document.querySelector("#portfolio > h2");
-  
   const spanPortfolio = spanEditor.cloneNode(true);
   spanPortfolio.classList.remove("projectRemove");
   spanPortfolio.id = "titleProjectRemove";
@@ -301,22 +301,21 @@ function openModal() {
     figure.appendChild(deleteIcon);
 
     // Suppression de l'image via la modale
-deleteIcon.addEventListener("click", async event => {
-  event.preventDefault();
-  const cardId = figure.dataset.cardId; // Récupère l'ID du travail
-  try {
-    // 1. Suppression côté API
-    await API.deleteWork(cardId);
-    console.log(`Image avec ID ${cardId} supprimée côté serveur`);
+    deleteIcon.addEventListener("click", async event => {
+      event.preventDefault();
+      const cardId = figure.dataset.cardId; // Récupère l'ID du travail
+      try {
+        // 1. Suppression côté API
+        await API.deleteWork(cardId);
+        console.log(`Image avec ID ${cardId} supprimée côté serveur`);
 
-    // 2. Suppression dans le DOM
-    removeWorkCard(cardId);
-    console.log(`Image avec ID ${cardId} retirée du DOM`);
-  } catch (error) {
-    handleError(`Erreur lors de la suppression de l'image ID ${cardId} :`, error);
-  }
-});
-
+        // 2. Suppression dans le DOM
+        removeWorkCard(cardId);
+        console.log(`Image avec ID ${cardId} retirée du DOM`);
+      } catch (error) {
+        handleError(`Erreur lors de la suppression de l'image ID ${cardId} :`, error);
+      }
+    });
 
     return figure;
   });
@@ -362,7 +361,7 @@ function enableScroll() {
 
 /**
  * Insère le HTML de la modale dans le DOM.
- * Seule la section Galerie est conservée ; la partie formulaire d'ajout a été retirée.
+ * Seule la section Galerie est conservée
  */
 function insertModalHTML() {
   // Si une modale existe déjà, ne rien faire
@@ -531,24 +530,12 @@ function setupEditModal() {
       const titleValue = document.querySelector("#title").value.trim();
       const selectedOption = selectCategory.selectedOptions[0];
       const categoryId = parseInt(selectedOption.getAttribute("data-id"));
-
       const formData = new FormData();
       formData.append("image", imageFile);
       formData.append("title", titleValue);
       formData.append("category", categoryId);
 
-      fetch(API_URL + "works", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-        .then(response => {
-          if (!response.ok) throw new Error("La requête POST a échoué");
-          return response.json();
-        })
+      API.addWork(formData)
         .then(data => {
           console.log("Requête POST réussie :", data);
           // Actualise la galerie en récupérant les travaux mis à jour
