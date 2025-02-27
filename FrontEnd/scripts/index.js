@@ -179,7 +179,6 @@ function removeToken() {
   localStorage.removeItem("token");
   sessionStorage.removeItem("deletedImages");
 }
-window.addEventListener("unload", removeToken);
 
 /**
  * Active les fonctionnalités du mode admin.
@@ -192,10 +191,13 @@ function activateAdminMode() {
   if (titleProjectRemove) {
     titleProjectRemove.addEventListener("click", event => {
       event.preventDefault();
-      insertModalHTML(); // Insère le HTML de la modale si elle n'existe pas déjà
+      if (!document.getElementById("modal")) {
+        insertModalHTML(); // Insère le HTML de la modale seulement si elle n'existe pas
+      }
       openModal();
       setupEditModal();
-    }, { once: true }); // L'événement est ajouté une seule fois
+    });
+
   }
 
   // Bouton de suppression des projets via l'API
