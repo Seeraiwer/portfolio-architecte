@@ -305,14 +305,16 @@ function openModal() {
     // Suppression de l'image via la modale
     deleteIcon.addEventListener("click", async event => {
       event.preventDefault();
-      const cardId = figure.dataset.cardId; // Récupère l'ID du travail
+      const cardId = figure.dataset.cardId; // Récupère l'ID du projet
+
       try {
         // 1. Suppression côté API
         await API.deleteWork(cardId);
         console.log(`Image avec ID ${cardId} supprimée côté serveur`);
 
-        // 2. Suppression dans le DOM
+        // 2. Suppression immédiate de l'élément du DOM (dans la modale ET la galerie principale)
         removeWorkCard(cardId);
+        figure.remove(); // Supprime aussi l'élément dans la modale
         console.log(`Image avec ID ${cardId} retirée du DOM`);
       } catch (error) {
         handleError(`Erreur lors de la suppression de l'image ID ${cardId} :`, error);
@@ -499,8 +501,8 @@ function setupEditModal() {
     });
   }
 
-  // Validation en temps réel du formulaire
-  editSection.addEventListener("input", () => {
+  // Fonction qui met à jour l'état du bouton de soumission
+  function updateFormValidation() {
     const titleInput = document.querySelector("#title");
     const errorImg = document.getElementById("errorImg");
     const titleError = document.querySelector("#ErrorTitleSubmit");
@@ -522,7 +524,12 @@ function setupEditModal() {
       submitButton.style.background = "grey";
       canSubmit = false;
     }
-  });
+  }
+
+  // Écoute les changements dans les champs du formulaire
+  editSection.addEventListener("input", updateFormValidation);
+  inputFile.addEventListener("change", updateFormValidation); // Ajout d'un écouteur sur l'upload d'image
+
 
   // Soumission du formulaire d'ajout d'image
   editForm.addEventListener("submit", event => {
