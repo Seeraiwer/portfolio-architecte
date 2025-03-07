@@ -774,17 +774,24 @@ hr {
   text-transform: uppercase;
 }
 
+input[type="submit"],
 .fileLabel {
-  display: inline-block;
-  background-color: rgb(203, 214, 220);
-  padding: 10px 15px;
-  border-radius: 25px;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  text-align: center;
+  font-weight: bold;
+  padding: 0;
+  line-height: normal;
 }
 
 .fileLabel span {
-  font-weight: bold;
-  color: rgb(87, 130, 155);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
 }
 
 .file-input {

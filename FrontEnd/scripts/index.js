@@ -372,54 +372,54 @@ function insertModalHTML() {
   if (document.getElementById("modal")) return;
 
   document.body.insertAdjacentHTML("beforeend", `
-      <aside id="modal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-        <div id="modalContainer">
-          <span class="fa-solid fa-xmark" id="closeModal"></span>
-           <i id="previewModal" class="fa-solid fa-arrow-left"></i>
-           <section class="modalTemplate" id="modalEdit">
-             <div id="editionGallery">
-          <h2 class="modalTitle">Galerie photo</h2>
-          <div id="modalGrid"></div>
+         <aside id="modal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+           <div id="modalContainer">
+             <span class="fa-solid fa-xmark" id="closeModal"></span>
+              <i id="previewModal" class="fa-solid fa-arrow-left"></i>
+              <section class="modalTemplate" id="modalEdit">
+                <div id="editionGallery">
+             <h2 class="modalTitle">Galerie photo</h2>
+             <div id="modalGrid"></div>
+                </div>
+             <div class="footerModal">
+               <hr>
+                  <input type="submit" value="Ajouter une photo" id="editModal">
+                </div>
+              </section>
+              <!-- Formulaire d'ajout d'image -->
+              <section class="modalTemplate" id="editSection" style="display:none">
+                <h2 class="modalTitle">Ajout photo</h2>
+                <form id="editWorks">
+                  <div id="addImageContainer">
+                    <i class="fa-solid fa-image"></i>
+                    <div id="inputFile">
+                      <label for="filetoUpload" class="fileLabel">
+                        <span>+ Ajouter une photo</span>
+                        <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg" class="file-input">
+                      </label>
+                    </div>
+                    <span class="filesize">jpg, png : 4mo max</span>
+                    <span id="errorImg"></span>
+                  </div>
+                  <div class="inputEdit" id="addTitle">
+                    <label for="title">Titre</label>
+                    <input type="text" name="title" id="title" class="inputCss" required>
+                    <span id="ErrorTitleSubmit" class="errormsg"></span>
+                  </div>
+                  <div class="inputEdit" id="addCategory">
+                    <label for="category">Catégorie</label>
+                    <select name="category" id="category" data-id="" class="inputCss"></select>
+                    <span id="ErrorCategorySubmit" class="errormsg"></span>
+                  </div>
+                  <div class="footerModal editFooter">
+                    <hr>
+                    <input type="submit" value="Valider">
              </div>
-          <div class="footerModal">
-            <hr>
-               <input type="submit" value="Ajouter une photo" id="editModal">
-             </div>
-           </section>
-           <!-- Formulaire d'ajout d'image -->
-           <section class="modalTemplate" id="editSection" style="display:none">
-             <h2 class="modalTitle">Ajout photo</h2>
-             <form id="editWorks">
-               <div id="addImageContainer">
-                 <i class="fa-solid fa-image"></i>
-                 <div id="inputFile">
-                   <label for="filetoUpload" class="fileLabel">
-                     <span>+ Ajouter une photo</span>
-                     <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg" class="file-input">
-                   </label>
-                 </div>
-                 <span class="filesize">jpg, png : 4mo max</span>
-                 <span id="errorImg"></span>
-               </div>
-               <div class="inputEdit" id="addTitle">
-                 <label for="title">Titre</label>
-                 <input type="text" name="title" id="title" class="inputCss" required>
-                 <span id="ErrorTitleSubmit" class="errormsg"></span>
-               </div>
-               <div class="inputEdit" id="addCategory">
-                 <label for="category">Catégorie</label>
-                 <select name="category" id="category" data-id="" class="inputCss"></select>
-                 <span id="ErrorCategorySubmit" class="errormsg"></span>
-               </div>
-               <div class="footerModal editFooter">
-                 <hr>
-                 <input type="submit" value="Valider">
-          </div>
-             </form>
-           </section>
-        </div>
-      </aside>
-    `);
+                </form>
+              </section>
+           </div>
+         </aside>
+       `);
 }
 
 /**
@@ -501,39 +501,54 @@ function setupEditModal() {
     });
   }
 
-  // Fonction qui met à jour l'état du bouton de soumission
-  function updateFormValidation() {
+  // Fonction pour mettre à jour uniquement l'apparence du bouton en temps réel
+  function updateButtonAppearance() {
     const titleInput = document.querySelector("#title");
-    const errorImg = document.getElementById("errorImg");
-    const titleError = document.querySelector("#ErrorTitleSubmit");
-    const categoryError = document.querySelector("#ErrorCategorySubmit");
     const submitButton = document.querySelector("#editWorks .editFooter input[type=submit]");
+
+    // Vérifier si le bouton existe
+    if (!submitButton) return;
 
     const imageSelected = !!inputFile.files[0];
     const titleValid = titleInput.value.trim().length > 0;
     const categoryValid = selectCategory.value !== "";
 
-    errorImg.textContent = imageSelected ? "" : "Veuillez sélectionner une image";
-    titleError.textContent = titleValid ? "" : "Ajoutez un titre";
-    categoryError.textContent = categoryValid ? "" : "Choisissez une catégorie";
-
+    // Mise à jour visuelle du bouton uniquement (sans afficher les messages d'erreur)
     if (imageSelected && titleValid && categoryValid) {
       submitButton.style.background = "#1d6154";
-      canSubmit = true;
     } else {
       submitButton.style.background = "grey";
-      canSubmit = false;
     }
   }
+  // Ajouter les écouteurs pour mettre à jour l'apparence du bouton en temps réel
+  editSection.addEventListener("input", updateButtonAppearance);
+  inputFile.addEventListener("change", updateButtonAppearance);
 
-  // Écoute les changements dans les champs du formulaire
-  editSection.addEventListener("input", updateFormValidation);
-  inputFile.addEventListener("change", updateFormValidation); // Ajout d'un écouteur sur l'upload d'image
+  // Fonction de validation complète (appelée uniquement lors de la soumission)
+  function validateForm() {
+    const titleInput = document.querySelector("#title");
+    const errorImg = document.getElementById("errorImg");
+    const titleError = document.querySelector("#ErrorTitleSubmit");
+    const categoryError = document.querySelector("#ErrorCategorySubmit");
 
+    const imageSelected = !!inputFile.files[0];
+    const titleValid = titleInput.value.trim().length > 0;
+    const categoryValid = selectCategory.value !== "";
 
+    // Afficher les messages d'erreur uniquement si les éléments existent
+    if (errorImg) errorImg.textContent = imageSelected ? "" : "Veuillez sélectionner une image";
+    if (titleError) titleError.textContent = titleValid ? "" : "Ajoutez un titre";
+    if (categoryError) categoryError.textContent = categoryValid ? "" : "Choisissez une catégorie";
+
+    return imageSelected && titleValid && categoryValid;
+  }
   // Soumission du formulaire d'ajout d'image
   editForm.addEventListener("submit", event => {
     event.preventDefault();
+
+    // Appliquer la validation au moment du clic sur valider
+    canSubmit = validateForm();
+
     if (canSubmit) {
       const imageFile = inputFile.files[0];
       const titleValue = document.querySelector("#title").value.trim();
@@ -560,6 +575,7 @@ function setupEditModal() {
       console.log("Formulaire invalide !");
     }
   });
+  updateButtonAppearance();
 }
 
 /**
