@@ -776,22 +776,23 @@ hr {
 
 input[type="submit"],
 .fileLabel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 36px;
-  text-align: center;
-  font-weight: bold;
-  padding: 0;
-  line-height: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px; 
+    text-align: center;
+    font-weight: bold;
+    line-height: normal;
+    position: relative;
 }
 
+input[type="submit"] span,
 .fileLabel span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
 }
 
 .file-input {
