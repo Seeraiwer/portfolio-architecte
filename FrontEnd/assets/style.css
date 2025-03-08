@@ -1,10 +1,18 @@
 /* ====================================================
-   PARTIE 1 : RESET CSS & STYLES GLOBAUX
+   VARIABLES GLOBALES
    ==================================================== */
+:root {
+  --primary-color: #1d6154;
+  --secondary-color: #b1663c;
+  --bg-color: rgb(255, 254, 248);
+  --hover-bg: #144d42;
+  --font-main: "Work Sans";
+  --font-alt: "Syne";
+}
 
-/* Reset CSS inspiré de Meyer Reset v2.0
-   Remet à zéro marges, paddings, bordures et styles par défaut.
-*/
+/* ====================================================
+     RESET CSS & STYLES GLOBAUX (inspiré de Meyer Reset v2.0)
+     ==================================================== */
 html,
 body,
 div,
@@ -95,6 +103,22 @@ video {
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
 /* HTML5 display-role reset for older browsers */
 article,
 aside,
@@ -113,20 +137,18 @@ section {
 body,
 login {
   line-height: 1;
-  background-color: rgb(255, 254, 248);
+  background-color: var(--bg-color);
   max-width: 1140px;
   margin: auto;
-  font-family: "Work Sans";
+  font-family: var(--font-main);
   font-size: 14px;
 }
 
-/* Suppression des styles par défaut des listes */
 ol,
 ul {
   list-style: none;
 }
 
-/* Suppression des guillemets automatiques pour blockquote et q */
 blockquote,
 q {
   quotes: none;
@@ -139,13 +161,11 @@ q:after {
   content: none;
 }
 
-/* Tables : fusion des bordures et suppression des espacements */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* Liens : suppression de la déco et héritage de la couleur */
 a {
   text-decoration: none;
   color: black;
@@ -156,10 +176,8 @@ a:visited {
 }
 
 /* ====================================================
-   PARTIE 2 : STRUCTURE DE BASE
-   ==================================================== */
-
-/* Header : disposition en flex pour espacer les éléments */
+     STRUCTURE DE BASE
+     ==================================================== */
 header {
   display: flex;
   justify-content: space-between;
@@ -170,36 +188,32 @@ header a {
   text-decoration: none;
 }
 
-/* Sections : marges verticales */
 section {
   margin: 50px 0;
 }
 
-/* Titre principal (h1) et sous-titre */
 h1 {
   display: flex;
   flex-direction: column;
-  font-family: "Syne";
+  font-family: var(--font-alt);
   font-size: 22px;
   font-weight: 800;
-  color: #b1663c;
+  color: var(--secondary-color);
 }
 
 h1 > span {
-  font-family: "Work Sans";
+  font-family: var(--font-main);
   font-size: 10px;
   letter-spacing: 0.1em;
 }
 
-/* Titre secondaire (h2) */
 h2 {
-  font-family: "Syne";
+  font-family: var(--font-alt);
   font-weight: 700;
   font-size: 30px;
-  color: #1d6154;
+  color: var(--primary-color);
 }
 
-/* Navigation */
 nav ul {
   display: flex;
   align-items: center;
@@ -211,16 +225,14 @@ nav li {
   font-size: 1.2em;
 }
 
-/* Effet au survol des items de navigation */
+nav li:hover,
 li:hover {
-  color: #b1663c;
+  color: var(--secondary-color);
 }
 
 /* ====================================================
-   PARTIE 3 : INTRODUCTION, PORTFOLIO & GALERIE
-   ==================================================== */
-
-/* Section Introduction : deux colonnes (image et article) */
+     INTRODUCTION, PORTFOLIO & GALERIE
+     ==================================================== */
 #introduction {
   display: flex;
   align-items: center;
@@ -239,7 +251,6 @@ li:hover {
 
 #introduction article {
   font-size: 18px;
-  /* Augmentation de la taille de la police */
 }
 
 #introduction h2 {
@@ -250,7 +261,6 @@ li:hover {
   margin-bottom: 0.5em;
 }
 
-/* Titre de la section Portfolio centré */
 #portfolio h2 {
   display: flex;
   align-items: center;
@@ -259,7 +269,6 @@ li:hover {
   margin-bottom: 1em;
 }
 
-/* Galerie : grille à 3 colonnes avec espace entre les items */
 .gallery {
   width: 100%;
   display: grid;
@@ -288,7 +297,6 @@ li:hover {
   transform: scale(1.2);
 }
 
-/* Icône poubelle en haut à droite de chaque image */
 .delete-icon {
   position: absolute;
   top: 5px;
@@ -305,14 +313,12 @@ li:hover {
   cursor: pointer;
 }
 
-/* Pied de la modale */
 .footerModal {
   margin-top: 20px;
 }
 
-/* Bouton "Ajouter une photo" */
 .add-photo-btn {
-  background-color: #1d6154;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 20px;
@@ -324,10 +330,9 @@ li:hover {
 }
 
 .add-photo-btn:hover {
-  background-color: #144d42;
+  background-color: var(--hover-bg);
 }
 
-/* Icône de fermeture */
 #closeModal {
   position: absolute;
   top: 15px;
@@ -337,7 +342,6 @@ li:hover {
   z-index: 10000;
 }
 
-/* Boutons de filtre (ex. pour trier la galerie) */
 .filter {
   display: flex;
   flex-wrap: wrap;
@@ -349,11 +353,11 @@ li:hover {
 .btn {
   border-radius: 60px;
   padding: 1.2em 1.8em;
-  font-family: "Syne";
+  font-family: var(--font-alt);
   font-size: 16px;
   font-weight: 700;
-  border: 1px solid #1d6154;
-  color: #1d6154;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
   background: none;
   transition: 0.3s ease;
   display: flex;
@@ -363,23 +367,20 @@ li:hover {
 }
 
 .btn:hover {
-  background-color: #1d6154;
+  background-color: var(--primary-color);
   color: #fffef8;
   cursor: pointer;
   transform: scale(1.05);
 }
 
-/* Bouton actif */
 .active {
-  background: #1d6154;
+  background: var(--primary-color);
   color: #fffef8;
 }
 
 /* ====================================================
-   PARTIE 4 : PAGE DE CONNEXION (LOGIN)
-   ==================================================== */
-
-/* Conteneur principal */
+     PAGE DE CONNEXION (LOGIN)
+     ==================================================== */
 #login {
   display: flex;
   flex-direction: column;
@@ -394,7 +395,6 @@ li:hover {
   margin-bottom: 20px;
 }
 
-/* Formulaire de login */
 #loginForm {
   display: flex;
   flex-direction: column;
@@ -404,7 +404,7 @@ li:hover {
 #loginForm label {
   width: 100%;
   text-align: left;
-  margin: 2em 0 10px 0;
+  margin: 2em 0 10px;
 }
 
 #loginForm h2 {
@@ -424,10 +424,8 @@ li:hover {
   border: none;
   box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
   width: 379px;
-  /* Fixe la largeur des champs */
 }
 
-/* Champs de saisie email et password */
 #loginForm input[type="email"],
 #loginForm input[type="password"] {
   font-size: 16px;
@@ -438,13 +436,12 @@ li:hover {
   text-align: left;
 }
 
-/* Bouton de soumission */
 #loginForm input[type="submit"],
 input[type="submit"] {
-  font-family: "Syne";
+  font-family: var(--font-alt);
   font-weight: 700;
   color: white;
-  background-color: #1d6154;
+  background-color: var(--primary-color);
   margin: 2em auto;
   width: 180px;
   border-radius: 60px;
@@ -459,7 +456,6 @@ input[type="submit"] {
   width: 379px;
 }
 
-/* Messages d'erreur */
 .loginError,
 .passwordError {
   margin-top: 15px;
@@ -473,7 +469,6 @@ input[type="submit"] {
   display: none;
 }
 
-/* Lien "mot de passe oublié" */
 .forgotPassword {
   text-decoration: underline;
   text-align: center;
@@ -482,27 +477,27 @@ input[type="submit"] {
 }
 
 /* ====================================================
-   PARTIE 5 : FOOTER, ADMIN EDITOR, MODAL & PAGE D'ÉDITION
-   ==================================================== */
-
-/* FOOTER */
+     FOOTER, ADMIN EDITOR, MODAL & PAGE D'ÉDITION
+     ==================================================== */
 footer {
   background-color: white;
-  width: 100%;
   height: 50px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  width: 1440px;
   position: relative;
+  bottom: 0;
+  left: 0;
 }
 
 footer nav ul {
   display: flex;
   justify-content: flex-end;
   margin: 2em;
+  padding-right: 50px;
 }
 
-/* --------------------- PAGE ADMIN EDITOR --------------------- */
 .flagEditor {
   position: fixed;
   top: 0;
@@ -531,40 +526,8 @@ footer nav ul {
   padding-right: 10px;
 }
 
-.flagEditor button {
-  color: black;
-  font-size: 14px;
-  width: 216px;
-  height: 40px;
-  border-radius: 60px;
-  margin-left: 20px;
-  outline: none;
-  border: 2px solid black;
-  transition: 0.3s ease;
-}
-
-.flagEditor button:hover {
-  transform: scale(1.05);
-  color: white;
-  background: #1d6154;
-}
-
-/* Éditeur sous photo */
-.figureRemove {
-  display: flex;
-  flex-direction: row;
-  padding: 20px 10%;
-  color: black;
-}
-
-.figureRemove i {
-  padding-right: 20px;
-  color: black;
-}
-
-/* Éditeur de projet */
 #titleProjectRemove {
-  font-family: "Work Sans";
+  font-family: var(--font-main);
   font-weight: normal;
   color: black;
   font-size: 14px;
@@ -580,7 +543,6 @@ footer nav ul {
   color: black;
 }
 
-/* --------------------- PAGE MODAL --------------------- */
 .modal {
   position: fixed;
   top: 0;
@@ -709,11 +671,8 @@ footer nav ul {
 hr {
   width: 100%;
 }
-.modalTemplate input[type="submit"] {
-  width: 60%;
-  text-align: center;
-  padding: 10px 45px;
-}
+
+.modalTemplate input[type="submit"],
 .modalTemplate input[type="button"] {
   width: 60%;
   text-align: center;
@@ -729,7 +688,6 @@ hr {
   cursor: pointer;
 }
 
-/* --------------------- PAGE D'ÉDITION --------------------- */
 #editSection {
   align-items: center;
 }
@@ -776,23 +734,23 @@ hr {
 
 input[type="submit"],
 .fileLabel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px; 
-    text-align: center;
-    font-weight: bold;
-    line-height: normal;
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  text-align: center;
+  font-weight: bold;
+  line-height: normal;
+  position: relative;
 }
 
 input[type="submit"] span,
 .fileLabel span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
 }
 
 .file-input {

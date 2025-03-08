@@ -232,14 +232,7 @@ function setupAdminInterface() {
   spanEditor.insertBefore(iconEditor, spanEditor.firstChild);
   flagEditor.appendChild(spanEditor);
 
-  // Création et ajout du bouton "Modifier" pour ouvrir la modale d'ajout de médias
-  const modifyButton = document.createElement("button");
-  modifyButton.id = "modifyButton";
-  modifyButton.textContent = "Modifier";
-  modifyButton.classList.add("btn");
-  flagEditor.appendChild(modifyButton);
-
-  // Injection dans la section "introduction" et dans le titre du portfolio
+   // Injection dans la section "introduction" et dans le titre du portfolio
   const portfolioTitle = document.querySelector("#portfolio > h2");
   const spanPortfolio = spanEditor.cloneNode(true);
   spanPortfolio.classList.remove("projectRemove");
