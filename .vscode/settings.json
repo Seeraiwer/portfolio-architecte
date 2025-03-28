@@ -1,3 +1,33 @@
 { 
     "liveServer.settings.ignoreFiles": ["Backend/**"] 
 }
+{
+    // Active la validation W3C à la sauvegarde
+    "w3cWebValidator.onSave": true,
+    "w3cWebValidator.autoValidate": true,
+  
+    // Active HTMLHint pour le linting HTML
+    "htmlhint.options": {
+      "tagname-lowercase": true,
+      "attr-lowercase": true,
+      "attr-value-double-quotes": true,
+      "doctype-first": true,
+      "tag-pair": true,
+      "spec-char-escape": true,
+      "id-unique": true,
+      "src-not-empty": true,
+      "attr-no-duplication": true
+    },
+  
+    // Format automatique à la sauvegarde avec Prettier
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+  
+    // Autres options utiles
+    "editor.tabSize": 2,
+    "editor.wordWrap": "on",
+    "files.autoSave": "onFocusChange"
+  }
+  
