@@ -74,7 +74,7 @@ async function loginUser() {
       headers: {
         "Content-Type": "application/json", // Indique que l'on envoie du JSON
       },
-      body: JSON.stringify(logUser), // Convertit les données utilisateur en JSON
+      body: JSON.stringify(logUser), // Convertit les données utilisateur (objet) en JSON
     });
 
     const data = await response.json(); // Convertit la réponse en JSON
