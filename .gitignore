@@ -1,2 +1,12 @@
-.idea
-.vscode/settings.json
+# Éditeurs
+.idea/
+.vscode/
+
+# Backend - secrets et données
+Backend/.env
+Backend/database.sqlite
+Backend/node_modules/
+
+# Dépendances racine (lockfile vide)
+node_modules/
+package-lock.json

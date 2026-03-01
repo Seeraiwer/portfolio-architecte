@@ -65,7 +65,6 @@ const API = {
 // Affiche l'erreur dans la console et peut être étendu pour informer l'utilisateur
 function handleError(message, error) {
   console.error(message, error);
-  // Vous pouvez également afficher un message à l'utilisateur ici
 }
 
 /* =============================================
@@ -87,7 +86,7 @@ function getUniqueCategoryTitles(worksArray) {
  * @param {Object} work - Objet projet.
  * @returns {HTMLElement} Élément figure du projet.
  */
-function createWorkCard({ id, imageUrl, title, category, categoryId }) {
+function createWorkCard({ id, imageUrl, title, categoryId }) {
   const figure = document.createElement("figure");
   figure.dataset.cardId = id;
   figure.dataset.categoryId = categoryId;
@@ -200,14 +199,6 @@ function activateAdminMode() {
 
   }
 
-  // Bouton de suppression des projets via l'API
-  const deleteWorksButton = document.querySelector("body > div > button");
-  if (deleteWorksButton) {
-    deleteWorksButton.addEventListener("click", event => {
-      event.preventDefault();
-      deleteWorksFromApi();
-    });
-  }
 }
 
 /**
@@ -424,32 +415,6 @@ function removeWorkCard(cardId) {
   if (card && card.parentNode) card.parentNode.removeChild(card);
 }
 
-/**
- * Met à jour la liste des images supprimées dans le sessionStorage.
- * @param {string} cardId - ID de l'image supprimée.
- */
-function updateDeletedImages(cardId) {
-  const deleted = JSON.parse(sessionStorage.getItem("deletedImages")) || {};
-  deleted[cardId] = true;
-  sessionStorage.setItem("deletedImages", JSON.stringify(deleted));
-}
-
-/**
- * Supprime les images marquées comme supprimées via l'API.
- */
-function deleteWorksFromApi() {
-  const deleted = JSON.parse(sessionStorage.getItem("deletedImages"));
-  if (!deleted) return;
-  Object.keys(deleted).forEach(async id => {
-    try {
-      if (!token) return console.log({ error: "Pas connecté" });
-      await API.deleteWork(id);
-      console.log(`Image avec ID ${id} supprimée`);
-    } catch (error) {
-      handleError(`Erreur lors de la suppression de l'image avec ID ${id}:`, error);
-    }
-  });
-}
 
 /**
  * Configure la modale pour l'édition et l'ajout d'images.
