@@ -9,4 +9,3 @@ Backend/node_modules/
 
 # Dépendances racine (lockfile vide)
 node_modules/
-package-lock.json

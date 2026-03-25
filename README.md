@@ -11,7 +11,7 @@ Développement du site portfolio d'une architecte d'intérieur : affichage dynam
 ```
 portfolio-architecte/
 ├── Backend/   API REST Node.js/Express + base de données SQLite
-└── FrontEnd/  Site statique HTML/CSS/JS vanilla
+└── FrontEnd/  Site statique HTML/CSS/JS
 ```
 
 ---
@@ -39,13 +39,6 @@ npm start
 ```
 
 Le serveur démarre sur **http://localhost:5678**.
-
-Compte de test :
-
-```
-email    : sophie.bluel@test.tld
-password : S0phie
-```
 
 Documentation Swagger : [http://localhost:5678/api-docs](http://localhost:5678/api-docs)
 
